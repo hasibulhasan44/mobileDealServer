@@ -61,6 +61,12 @@ function run() {
       res.send(result)
     })
 
+    app.get('/allphones', async(req, res) => {
+      const query = {};
+      const result = await phonesCollection.find(query).toArray();
+      res.send(result);
+    })
+
     app.get('/phonedetails/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id : ObjectId(id)};
