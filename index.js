@@ -85,6 +85,13 @@ function run() {
       res.send(result);
     })
 
+    app.get('/mywishedphones', async(req, res) => {
+      const email = req.query.email;
+      const query = {userEmail : email}
+      const result = await wishCollection.find(query).toArray();
+      res.send(result);
+    })
+
     app.post('/addorder', async(req, res) => {
       const order = req.body;
       delete order._id;
