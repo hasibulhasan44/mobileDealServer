@@ -19,7 +19,10 @@ function run() {
 
   const usersCollection = client.db("mobileDeal").collection("users");
   const phonesCollection = client.db("mobileDeal").collection("phones");
-  const categoriesCollection = client.db("mobileDeal").collection('Brands')
+  const categoriesCollection = client.db("mobileDeal").collection('Brands');
+  const ordersCollection = client.db("mobileDeal").collection('orders');
+  const reportedPhonesCollection = client.db("mobileDeal").collection('reportedPhones');
+
   try {
 
     app.post("/users", async (req, res) => {
@@ -71,6 +74,13 @@ function run() {
       const id = req.params.id;
       const query = {_id : ObjectId(id)};
       const result = await phonesCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.post('/reportPhone', async(req, res) => {
+      const reportedPhone = req.body;
+      delete reportedPhone._id;
+      const result = await reportedPhonesCollection.insertOne(reportedPhone);
       res.send(result);
     })
 
@@ -131,6 +141,13 @@ function run() {
       const result = await phonesCollection.updateOne(query, updatedDoc);
       res.send(result);
     });
+
+    app.post('/addorder', async(req, res) => {
+      const order = req.body;
+      delete order._id;
+      const result = await ordersCollection.insertOne(order);
+      res.send(res);
+    })
 
   } catch {}
 }
