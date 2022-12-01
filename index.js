@@ -22,6 +22,7 @@ function run() {
   const categoriesCollection = client.db("mobileDeal").collection('Brands');
   const ordersCollection = client.db("mobileDeal").collection('orders');
   const reportedPhonesCollection = client.db("mobileDeal").collection('reportedPhones');
+  const wishCollection = client.db("mobileDeal").collection('wishlist');
 
   try {
 
@@ -74,6 +75,13 @@ function run() {
       const id = req.params.id;
       const query = {_id : ObjectId(id)};
       const result = await phonesCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.post('/addtowishlist', async(req, res) => {
+      const wishedPhone = req.body;
+      delete wishedPhone._id;
+      const result = await wishCollection.insertOne(wishedPhone);
       res.send(result);
     })
 
