@@ -76,7 +76,7 @@ function run() {
 
     app.get("/mylistings", async (req, res) => {
       const email = req.query.email;
-      const query = {};
+      const query = {selleremail: email};
       const result = await phonesCollection.find(query).toArray();
       res.send(result);
     });
