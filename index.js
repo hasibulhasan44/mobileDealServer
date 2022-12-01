@@ -77,6 +77,27 @@ function run() {
       res.send(result);
     })
 
+    app.post('/addorder', async(req, res) => {
+      const order = req.body;
+      delete order._id;
+      const result = await ordersCollection.insertOne(order);
+      res.send(result);
+    })
+
+    app.get('/orders', async(req, res) => {
+      const email = req.query.email;
+      const query = {buyerEmail : email}
+      const result = await ordersCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.delete('/dashboard/cancelorder/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id : ObjectId(id)};
+      const result = await ordersCollection.deleteOne(query);
+      res.send(result);
+    })
+
     app.post('/reportPhone', async(req, res) => {
       const reportedPhone = req.body;
       delete reportedPhone._id;
@@ -142,11 +163,10 @@ function run() {
       res.send(result);
     });
 
-    app.post('/addorder', async(req, res) => {
-      const order = req.body;
-      delete order._id;
-      const result = await ordersCollection.insertOne(order);
-      res.send(res);
+    app.get("/reportedphones", async(req, res) => {
+      const query = {};
+      const result = await reportedPhonesCollection.find(query).toArray();
+      res.send(result);
     })
 
   } catch {}
