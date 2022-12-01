@@ -190,6 +190,15 @@ function run() {
       const result = await reportedPhonesCollection.find(query).toArray();
       res.send(result);
     })
+    
+    app.delete("/dashboard/deletereportedphone/:id", async (req, res) => {
+      const id = req.params.id;
+      const reportedquery = { _id: ObjectId(id) };
+      const query = {phoneId : id};
+      const result = await phonesCollection.deleteOne(reportedquery);
+      const reportresult = await reportedPhonesCollection.deleteMany(query);
+      res.send(result);
+    });
 
   } catch {}
 }
