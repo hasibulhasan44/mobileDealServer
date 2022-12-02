@@ -205,14 +205,20 @@ function run() {
       res.send(result);
     });
 
-    app.get("/dashboard/allusers", async (req, res) => {
+    app.get("/dashboard/alluser", async (req, res) => {
       const query = {};
       const result = await usersCollection.find(query).toArray();
       res.send(result);
     });
 
-    app.get("/dashboard/allsellers", async (req, res) => {
+    app.get("/dashboard/allseller", async (req, res) => {
       const query = {role: 'Seller'};
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/dashboard/allbuyer", async (req, res) => {
+      const query = {role: 'Buyer'};
       const result = await usersCollection.find(query).toArray();
       res.send(result);
     });
