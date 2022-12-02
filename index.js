@@ -8,6 +8,25 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 app.use(express.json());
 app.use(cors());
 
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send("unauthorized access");
+  }
+
+  console.log(authHeader);
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "forbidden access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+}
+
 function run() {
   const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.eexlwpm.mongodb.net/?retryWrites=true&w=majority`;
   console.log(uri);
@@ -27,6 +46,34 @@ function run() {
   const wishCollection = client.db("mobileDeal").collection("wishlist");
 
   try {
+    app.get("/jwt", async (req, res) => {
+      const email = req.query.email;
+      console.log(email);
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      if (user) {
+        const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, {
+          expiresIn: "2h",
+        });
+        return res.send({ mobileToken: token });
+      }
+      res.status(403).send({ mobileToken: "" });
+    });
+
+    app.get("/users/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await usersCollection.findOne(query);
+      res.send({ isAdmin: user?.role === "Admin" });
+    });
+
+    app.get("/users/seller/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await usersCollection.findOne(query);
+      res.send({ isSeller: user?.role === "Seller" });
+    });
+
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
@@ -72,13 +119,11 @@ function run() {
       res.send(result);
     });
 
-    app.get('/advertisedphones', async(req, res) => {
-      const query = {advertise : true,
-        status: "Available"  
-      }
+    app.get("/advertisedphones", async (req, res) => {
+      const query = { advertise: true, status: "Available" };
       const result = await phonesCollection.find(query).toArray();
       res.send(result);
-    })
+    });
 
     app.get("/phonedetails/:id", async (req, res) => {
       const id = req.params.id;
@@ -208,7 +253,11 @@ function run() {
           status: status,
         },
       };
-      const result = await phonesCollection.updateOne(query, updatedDoc, options);
+      const result = await phonesCollection.updateOne(
+        query,
+        updatedDoc,
+        options
+      );
       res.send(result);
     });
 
@@ -234,13 +283,13 @@ function run() {
     });
 
     app.get("/dashboard/allseller", async (req, res) => {
-      const query = {role: 'Seller'};
+      const query = { role: "Seller" };
       const result = await usersCollection.find(query).toArray();
       res.send(result);
     });
 
     app.get("/dashboard/allbuyer", async (req, res) => {
-      const query = {role: 'Buyer'};
+      const query = { role: "Buyer" };
       const result = await usersCollection.find(query).toArray();
       res.send(result);
     });
