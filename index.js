@@ -132,7 +132,7 @@ function run() {
       res.send(result);
     });
 
-    app.post("/addtowishlist", async (req, res) => {
+    app.post("/addtowishlist", verifyJWT, async (req, res) => {
       const wishedPhone = req.body;
       delete wishedPhone._id;
       const result = await wishCollection.insertOne(wishedPhone);
