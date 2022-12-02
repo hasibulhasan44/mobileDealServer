@@ -19,13 +19,14 @@ function run() {
 
   const usersCollection = client.db("mobileDeal").collection("users");
   const phonesCollection = client.db("mobileDeal").collection("phones");
-  const categoriesCollection = client.db("mobileDeal").collection('Brands');
-  const ordersCollection = client.db("mobileDeal").collection('orders');
-  const reportedPhonesCollection = client.db("mobileDeal").collection('reportedPhones');
-  const wishCollection = client.db("mobileDeal").collection('wishlist');
+  const categoriesCollection = client.db("mobileDeal").collection("Brands");
+  const ordersCollection = client.db("mobileDeal").collection("orders");
+  const reportedPhonesCollection = client
+    .db("mobileDeal")
+    .collection("reportedPhones");
+  const wishCollection = client.db("mobileDeal").collection("wishlist");
 
   try {
-
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
@@ -45,91 +46,91 @@ function run() {
       res.send(result);
     });
 
-    app.get('/categorieshome', async(req, res)=>{
+    app.get("/categorieshome", async (req, res) => {
       const query = {};
       const result = await categoriesCollection.find(query).limit(3).toArray();
       res.send(result);
-    })
+    });
 
-    app.get('/categories', async(req, res)=>{
+    app.get("/categories", async (req, res) => {
       const query = {};
       const result = await categoriesCollection.find(query).toArray();
       res.send(result);
-    })
+    });
 
-    app.get('/phones/:brandname', async(req, res) => {
+    app.get("/phones/:brandname", async (req, res) => {
       const brandname = req.params.brandname;
       console.log(brandname);
-      const query = {brandname: brandname};
+      const query = { brandname: brandname };
       const result = await phonesCollection.find(query).toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
 
-    app.get('/allphones', async(req, res) => {
+    app.get("/allphones", async (req, res) => {
       const query = {};
       const result = await phonesCollection.find(query).toArray();
       res.send(result);
-    })
+    });
 
-    app.get('/phonedetails/:id', async(req, res) => {
+    app.get("/phonedetails/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id : ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const result = await phonesCollection.findOne(query);
       res.send(result);
-    })
+    });
 
-    app.post('/addtowishlist', async(req, res) => {
+    app.post("/addtowishlist", async (req, res) => {
       const wishedPhone = req.body;
       delete wishedPhone._id;
       const result = await wishCollection.insertOne(wishedPhone);
       res.send(result);
-    })
+    });
 
-    app.get('/mywishedphones', async(req, res) => {
+    app.get("/mywishedphones", async (req, res) => {
       const email = req.query.email;
-      const query = {userEmail : email}
+      const query = { userEmail: email };
       const result = await wishCollection.find(query).toArray();
       res.send(result);
-    })
+    });
 
-    app.delete('/dashboard/removefromwishlist/:id', async(req, res) => {
+    app.delete("/dashboard/removefromwishlist/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id : ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const result = await wishCollection.deleteOne(query);
       res.send(result);
-    })
+    });
 
-    app.post('/addorder', async(req, res) => {
+    app.post("/addorder", async (req, res) => {
       const order = req.body;
       delete order._id;
       const result = await ordersCollection.insertOne(order);
       res.send(result);
-    })
+    });
 
-    app.get('/orders', async(req, res) => {
+    app.get("/orders", async (req, res) => {
       const email = req.query.email;
-      const query = {buyerEmail : email}
+      const query = { buyerEmail: email };
       const result = await ordersCollection.find(query).toArray();
       res.send(result);
-    })
+    });
 
-    app.delete('/dashboard/cancelorder/:id', async(req, res) => {
+    app.delete("/dashboard/cancelorder/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id : ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
       res.send(result);
-    })
+    });
 
-    app.post('/reportPhone', async(req, res) => {
+    app.post("/reportPhone", async (req, res) => {
       const reportedPhone = req.body;
       delete reportedPhone._id;
       const result = await reportedPhonesCollection.insertOne(reportedPhone);
       res.send(result);
-    })
+    });
 
     app.get("/mylistings", async (req, res) => {
       const email = req.query.email;
-      const query = {selleremail: email};
+      const query = { selleremail: email };
       const result = await phonesCollection.find(query).toArray();
       res.send(result);
     });
@@ -162,7 +163,11 @@ function run() {
           sellerverified: updatedCarDetails.sellerverified,
         },
       };
-      const result = await phonesCollection.updateOne(query, updatedDoc, options);
+      const result = await phonesCollection.updateOne(
+        query,
+        updatedDoc,
+        options
+      );
       res.send(result);
     });
 
@@ -185,21 +190,62 @@ function run() {
       res.send(result);
     });
 
-    app.get("/reportedphones", async(req, res) => {
+    app.get("/reportedphones", async (req, res) => {
       const query = {};
       const result = await reportedPhonesCollection.find(query).toArray();
       res.send(result);
-    })
-    
+    });
+
     app.delete("/dashboard/deletereportedphone/:id", async (req, res) => {
       const id = req.params.id;
       const reportedquery = { _id: ObjectId(id) };
-      const query = {phoneId : id};
+      const query = { phoneId: id };
       const result = await phonesCollection.deleteOne(reportedquery);
       const reportresult = await reportedPhonesCollection.deleteMany(query);
       res.send(result);
     });
 
+    app.get("/dashboard/allusers", async (req, res) => {
+      const query = {};
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.delete("/deleteuser", async (req, res) => {
+      const id = req.query.id;
+      const query = { _id: ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.put("/makeadmin", verifyJWT, async (req, res) => {
+      const id = req.query.id;
+      const query = { _id: ObjectId(id) };
+      updatedDoc = {
+        $set: {
+          role: "Admin",
+        },
+      };
+      const result = await usersCollection.updateOne(query, updatedDoc);
+      res.send(result);
+    });
+
+    app.put("/verify", verifyJWT, async (req, res) => {
+      const id = req.query.id;
+      const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          verified: true,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        query,
+        updatedDoc,
+        options
+      );
+      res.send(result);
+    });
   } catch {}
 }
 run();
