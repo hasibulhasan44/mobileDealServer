@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
+
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 app.use(express.json());
@@ -132,7 +134,7 @@ function run() {
       res.send(result);
     });
 
-    app.post("/addtowishlist", verifyJWT, async (req, res) => {
+    app.post("/addtowishlist", async (req, res) => {
       const wishedPhone = req.body;
       delete wishedPhone._id;
       const result = await wishCollection.insertOne(wishedPhone);
