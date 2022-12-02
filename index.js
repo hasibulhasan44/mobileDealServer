@@ -72,6 +72,14 @@ function run() {
       res.send(result);
     });
 
+    app.get('/advertisedphones', async(req, res) => {
+      const query = {advertise : true,
+        status: "Available"  
+      }
+      const result = await phonesCollection.find(query).toArray();
+      res.send(result);
+    })
+
     app.get("/phonedetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -187,6 +195,20 @@ function run() {
         },
       };
       const result = await phonesCollection.updateOne(query, updatedDoc);
+      res.send(result);
+    });
+
+    app.put("/changeStatus", async (req, res) => {
+      const id = req.query.id;
+      const status = req.headers.status;
+      const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          status: status,
+        },
+      };
+      const result = await phonesCollection.updateOne(query, updatedDoc, options);
       res.send(result);
     });
 
