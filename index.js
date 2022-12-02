@@ -211,6 +211,12 @@ function run() {
       res.send(result);
     });
 
+    app.get("/dashboard/allsellers", async (req, res) => {
+      const query = {role: 'Seller'};
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.delete("/deleteuser", async (req, res) => {
       const id = req.query.id;
       const query = { _id: ObjectId(id) };
@@ -218,7 +224,7 @@ function run() {
       res.send(result);
     });
 
-    app.put("/makeadmin", verifyJWT, async (req, res) => {
+    app.put("/makeadmin", async (req, res) => {
       const id = req.query.id;
       const query = { _id: ObjectId(id) };
       updatedDoc = {
@@ -230,7 +236,7 @@ function run() {
       res.send(result);
     });
 
-    app.put("/verify", verifyJWT, async (req, res) => {
+    app.put("/verify", async (req, res) => {
       const id = req.query.id;
       const query = { _id: ObjectId(id) };
       const options = { upsert: true };
